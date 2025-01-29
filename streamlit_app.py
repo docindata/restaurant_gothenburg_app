@@ -210,6 +210,8 @@ def display_average_rating(df):
     else:
         st.write("Inga restauranger hittades.")
 
+def display_creator_name(str='Skapad av Hashim Al-Haboobi'):
+    st.caption(str)
 
 # -------------------------------------------------------------------
 # 4. Main Application Flow
@@ -225,7 +227,7 @@ def main():
 
     # Titel & beskrivning
     st.title("🫕 Göteborgs Restauranger 🍖")
-    st.caption("D.v.s. vad ska vi äta?")
+    st.caption("a.k.a What should we eat?")
 
     # Skapa två kolumner för filter
     col1, col2 = st.columns([2, 1])
@@ -279,6 +281,8 @@ def main():
     with col_avg:
         st.caption("Genomsnittligt Betyg")
         display_average_rating(filtered_df)
+
+    display_creator_name()
 
 # Kör appen
 if __name__ == "__main__":
