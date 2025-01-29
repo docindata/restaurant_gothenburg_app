@@ -1,4 +1,4 @@
-
+import streamlit as st
 import requests
 import pandas as pd
 from io import StringIO
@@ -25,3 +25,4 @@ else:
 
 st.dataframe(df)
 
+print(df)
