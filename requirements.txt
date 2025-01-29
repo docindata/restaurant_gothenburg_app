@@ -1,5 +1,4 @@
 streamlit
 pandas
-IO
 altair
 pydeck
