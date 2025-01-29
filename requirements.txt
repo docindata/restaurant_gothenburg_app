@@ -2,4 +2,4 @@ streamlit
 pandas
 IO
 altair
-geopy
+pydeck

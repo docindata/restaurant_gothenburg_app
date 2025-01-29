@@ -3,6 +3,7 @@ import requests
 import pandas as pd
 from io import StringIO
 import altair as alt
+import pydeck as pdk
 
 # Replace with your Dropbox shared link and modify for direct download
 dropbox_url = st.secrets["dropbox_url"]
@@ -111,8 +112,60 @@ if selected_type != "All":
 
 st.dataframe(filtered_df[["title", "rating", "reviews", "cleaned_type"]], use_container_width=True)
 
+
+# ---------- Prepare map data ----------
+map_df = filtered_df.dropna(subset=["latitude", "longitude"])
+
+if not map_df.empty:
+    # Determine a good center for the map (e.g., mean lat/lon or a fixed location)
+    center_lat = map_df["latitude"].mean()
+    center_lon = map_df["longitude"].mean()
+
+    # Define the initial view state
+    initial_view_state = pdk.ViewState(
+        latitude=center_lat,
+        longitude=center_lon,
+        zoom=12,          # Adjust for your city scale
+        pitch=0
+    )
+
+    # Create a ScatterplotLayer to control marker size, color, and tooltips
+    layer = pdk.Layer(
+        "ScatterplotLayer",
+        data=map_df,
+        pickable=True,              # Enable tooltip "picking"
+        get_position="[longitude, latitude]",
+        get_radius=50,              # Radius in *meters*; increase for bigger dots
+        get_fill_color=[255, 0, 0], # Red markers (R, G, B)
+        get_line_color=[0, 0, 0],   # Optional: marker outline color
+        line_width_min_pixels=1
+    )
+
+    # Configure the tooltip to show restaurant name
+    # You can display other fields with {field_name} placeholders
+    tooltip = {
+        "html": "<b>Restaurant:</b> {title}<br/><b>Rating:</b> {rating}",
+        "style": {
+            "backgroundColor": "steelblue",
+            "color": "white"
+        }
+    }
+
+    # Build the Deck
+    deck = pdk.Deck(
+        layers=[layer],
+        initial_view_state=initial_view_state,
+        tooltip=tooltip
+    )
+
+    # Display the map
+    st.pydeck_chart(deck)
+else:
+    st.write("No valid coordinates to display on the map.")
+
 # ---------- Histogram & Average side by side ----------
 col_hist, col_avg = st.columns([3, 1])
+
 
 with col_hist:
     # Small header (caption) for the histogram
