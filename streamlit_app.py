@@ -5,6 +5,7 @@ from io import StringIO
 import altair as alt
 import pydeck as pdk
 
+
 # -------------------------------------------------------------------
 # 1. Data Fetching & Loading
 # -------------------------------------------------------------------
@@ -12,7 +13,7 @@ import pydeck as pdk
 @st.cache_data
 def load_data_from_csv(csv_text):
     """
-    Load data from CSV content (in-memory text), 
+    Load data from CSV content (in-memory text),
     reset index, and return the DataFrame.
     """
     df = pd.read_csv(csv_text)
@@ -25,12 +26,11 @@ def fetch_data_from_dropbox(dropbox_url):
     Return the loaded DataFrame if successful, or stop the app with an error.
     """
     response = requests.get(dropbox_url)
-    
     if response.status_code == 200:
         csv_content = StringIO(response.text)
         return load_data_from_csv(csv_content)
     else:
-        st.error(f"Failed to fetch file. Status code: {response.status_code}")
+        st.error(f"Misslyckades att hämta filen. Statuskod: {response.status_code}")
         st.stop()
 
 
@@ -44,58 +44,59 @@ def clean_restaurant_types(df):
     Stores result in a new column 'cleaned_type'.
     """
     type_mapping = {
-        "Restaurang": "Restaurant",
-        "Lunchrestaurang": "Restaurant",
-        "Exklusiv restaurang": "Restaurant",
-        "Vietnamesisk restaurang": "Vietnamese",
-        "Indisk restaurang": "Indian",
-        "Modern indisk restaurang": "Indian",
-        "Kinesisk restaurang": "Chinese",
-        "Japansk restaurang": "Japanese",
-        "Koreansk restaurang": "Korean",
-        "Thailändsk restaurang": "Thai",
-        "Asiatisk restaurang": "Asian",
-        "Asiatisk fusionrestaurang": "Asian Fusion",
-        "Ramen-restaurang": "Japanese",
-        "Palestinsk restaurang": "Palestinian",
-        "Persisk restaurang": "Persian",
-        "Turkisk restaurang": "Turkish",
-        "Grekisk restaurang": "Greek",
-        "Medelhavsrestaurang": "Mediterranean",
-        "Etiopisk restaurang": "Ethiopian",
-        "Argentinsk restaurang": "Argentinian",
-        "Sydamerikansk restaurang": "South American",
-        "Baskisk restaurang": "Basque",
-        "Amerikansk restaurang": "American",
-        "Svensk restaurang": "Swedish",
-        "Fransk restaurang": "French",
-        "Italiensk restaurang": "Italian",
-        "Skandinavisk restaurang": "Scandinavian",
-        "Europeisk restaurang": "European",
-        "Modern europeisk restaurang": "Modern European",
-        "Polsk restaurang": "Polish",
-        "Tjeckisk restaurang": "Czech",
-        "Nepalesisk restaurang": "Nepalese",
-        "Bulgarisk restaurang": "Bulgarian",
-        "Sushirestaurang": "Sushi",
-        "Fiskrestaurang": "Seafood",
-        "Fisk- och skaldjursrestaurang": "Seafood",
-        "Kycklingrestaurang": "Chicken",
-        "Kötträtter, restaurang": "Steakhouse",
-        "Pizzeria": "Pizza",
-        "Tacorestaurang": "Tacos",
-        "Tapasrestaurang": "Tapas",
-        "Tapasbar": "Tapas",
-        "Hamburgerrestaurang": "Burgers",
-        "Grillrestaurang": "Grill",
-        "Brasserie": "Brasserie",
-        "Bistro": "Bistro",
-        "Gastropub": "Gastropub",
-        "Vinbar": "Wine Bar",
-        "Bar och grill": "Bar & Grill",
-        "Bryggeripub": "Brewery Pub",
-        "Fusion, restaurang": "Fusion",
-    }
+    "Restaurang": "Restaurang",
+    "Lunchrestaurang": "Restaurang",
+    "Exklusiv restaurang": "Restaurang",
+    "Vietnamesisk restaurang": "Vietnamesisk",
+    "Indisk restaurang": "Indisk",
+    "Modern indisk restaurang": "Indisk",
+    "Kinesisk restaurang": "Kinesisk",
+    "Japansk restaurang": "Japansk",
+    "Koreansk restaurang": "Koreansk",
+    "Thailändsk restaurang": "Thailändsk",
+    "Asiatisk restaurang": "Asiatisk",
+    "Asiatisk fusionrestaurang": "Asiatisk fusion",
+    "Ramen-restaurang": "Japansk",
+    "Palestinsk restaurang": "Palestinsk",
+    "Persisk restaurang": "Persisk",
+    "Turkisk restaurang": "Turkisk",
+    "Grekisk restaurang": "Grekisk",
+    "Medelhavsrestaurang": "Medelhavs",
+    "Etiopisk restaurang": "Etiopisk",
+    "Argentinsk restaurang": "Argentinsk",
+    "Sydamerikansk restaurang": "Sydamerikansk",
+    "Baskisk restaurang": "Baskisk",
+    "Amerikansk restaurang": "Amerikansk",
+    "Svensk restaurang": "Svensk",
+    "Fransk restaurang": "Fransk",
+    "Italiensk restaurang": "Italiensk",
+    "Skandinavisk restaurang": "Skandinavisk",
+    "Europeisk restaurang": "Europeisk",
+    "Modern europeisk restaurang": "Modern europeisk",
+    "Polsk restaurang": "Polsk",
+    "Tjeckisk restaurang": "Tjeckisk",
+    "Nepalesisk restaurang": "Nepalesisk",
+    "Bulgarisk restaurang": "Bulgarisk",
+    "Sushirestaurang": "Sushi",
+    "Fiskrestaurang": "Fisk",
+    "Fisk- och skaldjursrestaurang": "Fisk & skaldjur",
+    "Kycklingrestaurang": "Kyckling",
+    "Kötträtter, restaurang": "Biffrestaurang",
+    "Pizzeria": "Pizzeria",
+    "Tacorestaurang": "Tacos",
+    "Tapasrestaurang": "Tapas",
+    "Tapasbar": "Tapas",
+    "Hamburgerrestaurang": "Hamburgare",
+    "Grillrestaurang": "Grill",
+    "Brasserie": "Brasserie",
+    "Bistro": "Bistro",
+    "Gastropub": "Gastropub",
+    "Vinbar": "Vinbar",
+    "Bar och grill": "Bar & Grill",
+    "Bryggeripub": "Bryggeripub",
+    "Fusion, restaurang": "Fusion",
+        }
+
     df["cleaned_type"] = df["type"].map(type_mapping).fillna(df["type"])
     return df
 
@@ -106,16 +107,14 @@ def clean_restaurant_types(df):
 
 def filter_restaurants(df, rating_range, selected_type):
     """
-    Given a DataFrame 'df', filter by the specified rating range 
+    Given a DataFrame 'df', filter by the specified rating range
     and 'cleaned_type' if selected_type != 'All'.
     Returns the filtered DataFrame.
     """
     min_rating, max_rating = rating_range
     filtered = df[(df["rating"] >= min_rating) & (df["rating"] <= max_rating)]
-    
     if selected_type != "All":
         filtered = filtered[filtered["cleaned_type"] == selected_type]
-    
     return filtered
 
 def display_map(df):
@@ -123,47 +122,40 @@ def display_map(df):
     Given a DataFrame with valid latitude and longitude columns,
     create a PyDeck ScatterplotLayer and display it on a Streamlit map.
     """
-    # Drop rows with missing lat/lon
     map_df = df.dropna(subset=["latitude", "longitude"])
-    
     if map_df.empty:
-        st.write("No valid coordinates to display on the map.")
+        st.write("Inga giltiga koordinater att visa på kartan.")
         return
 
-    # Calculate a center for the map (average lat/lon)
     center_lat = map_df["latitude"].mean()
     center_lon = map_df["longitude"].mean()
 
-    # Define the initial map view
     initial_view_state = pdk.ViewState(
         latitude=center_lat,
         longitude=center_lon,
-        zoom=12,  # Adjust for your city scale
+        zoom=12,
         pitch=0
     )
 
-    # ScatterplotLayer for the markers
     layer = pdk.Layer(
         "ScatterplotLayer",
         data=map_df,
         pickable=True,
         get_position="[longitude, latitude]",
-        get_radius=50,              # Marker size in meters
-        get_fill_color=[255, 0, 0], # Red markers (RGB)
+        get_radius=50,
+        get_fill_color=[255, 0, 0],
         get_line_color=[0, 0, 0],
         line_width_min_pixels=1
     )
 
-    # Configure hover tooltip
     tooltip = {
-        "html": "<b>Restaurant:</b> {title}<br/><b>Rating:</b> {rating}",
+        "html": "<b>Restaurang:</b> {title}<br/><b>Betyg:</b> {rating}",
         "style": {
             "backgroundColor": "steelblue",
             "color": "white"
         }
     }
 
-    # Build the deck and display
     deck = pdk.Deck(
         layers=[layer],
         initial_view_state=initial_view_state,
@@ -175,7 +167,6 @@ def display_histogram(df):
     """
     Given a DataFrame, create an Altair histogram of 'rating'.
     """
-    # Transform the rating into bins of size 0.1
     hist = (
         alt.Chart(df)
         .transform_bin(
@@ -185,8 +176,8 @@ def display_histogram(df):
         )
         .mark_bar(color="#4C78A8", opacity=0.7)
         .encode(
-            x=alt.X("bin_rating:Q", axis=alt.Axis(format=".1f", title="Rating")),
-            y=alt.Y("count()", title="Count"),
+            x=alt.X("bin_rating:Q", axis=alt.Axis(format=".1f", title="Betyg")),
+            y=alt.Y("count()", title="Antal"),
             tooltip=["count()"]
         )
         .properties(width=600, height=300)
@@ -217,7 +208,7 @@ def display_average_rating(df):
         """
         st.markdown(box_html, unsafe_allow_html=True)
     else:
-        st.write("No restaurants found.")
+        st.write("Inga restauranger hittades.")
 
 
 # -------------------------------------------------------------------
@@ -225,25 +216,25 @@ def display_average_rating(df):
 # -------------------------------------------------------------------
 
 def main():
-    # Fetch data from Dropbox (direct download link in secrets)
+    # Hämta data från Dropbox (direktlänk i secrets)
     dropbox_url = st.secrets["dropbox_url"]
     df = fetch_data_from_dropbox(dropbox_url)
 
-    # Clean the restaurant types
+    # Rensa upp restaurangtyper
     df = clean_restaurant_types(df)
 
-    # Title & caption
-    st.title("🫕 Gothenburg's Restaurants 🍖")
-    st.caption("A.K.A what should we eat?")
+    # Titel & beskrivning
+    st.title("🫕 Göteborgs Restauranger 🍖")
+    st.caption("D.v.s. vad ska vi äta?")
 
-    # Create two columns for filters
+    # Skapa två kolumner för filter
     col1, col2 = st.columns([2, 1])
 
     with col1:
-        # Rating range slider
+        # Välj betygsintervall
         min_val, max_val = float(df["rating"].min()), float(df["rating"].max())
         rating_range = st.slider(
-            "Select rating range",
+            "Välj betygsintervall",
             min_value=min_val,
             max_value=max_val,
             value=(min_val, max_val),
@@ -252,34 +243,43 @@ def main():
         )
 
     with col2:
-        # Restaurant type selector
+        # Välj restaurangtyp
         all_types = sorted(df["cleaned_type"].dropna().unique())
         type_options = ["All"] + all_types
-        selected_type = st.selectbox("Select restaurant Type", type_options)
+        selected_type = st.selectbox("Välj restaurangtyp", type_options)
 
-    # Apply filters
+    # Filtrera data
     filtered_df = filter_restaurants(df, rating_range, selected_type)
 
-    # Display a table of filtered data
-    st.dataframe(filtered_df[["title", "rating", "reviews", "cleaned_type"]], use_container_width=True)
+    # Visa tabell över filtrerade data
+    st.dataframe(
+        filtered_df[["title", "rating", "reviews", "cleaned_type"]]
+        .rename(columns={
+            "title": "Namn",
+            "rating": "Betyg",
+            "reviews": "Recensioner",
+            "cleaned_type": "Typ"
+        }),
+        use_container_width=True
+    )
 
-    # Show map of filtered data
+    # Visa karta
     display_map(filtered_df)
 
-    # Show histogram & average rating side by side
+    # Visa histogram & genomsnittsbetyg
     col_hist, col_avg = st.columns([3, 1])
 
     with col_hist:
-        st.caption("Rating Distribution")
+        st.caption("Betygsfördelning")
         if len(filtered_df) > 0:
             display_histogram(filtered_df)
         else:
-            st.write("No data to visualize.")
+            st.write("Ingen data att visualisera.")
 
     with col_avg:
-        st.caption("Average Rating")
+        st.caption("Genomsnittligt Betyg")
         display_average_rating(filtered_df)
 
-# Run the app
+# Kör appen
 if __name__ == "__main__":
     main()
